@@ -7,6 +7,7 @@ import com.twitter.diffy.analysis._
 import com.twitter.diffy.lifter.Message
 import com.twitter.diffy.proxy.ResponseMode._
 import com.twitter.finagle._
+import com.twitter.finagle.tracing.Trace
 import com.twitter.inject.TwitterModule
 import com.twitter.logging.Logger
 import com.twitter.util._
@@ -65,6 +66,7 @@ trait DifferenceProxy {
 
   def proxy = new Service[Req, Rep] {
     override def apply(req: Req): Future[Rep] = {
+      Trace.disable()
       val rawResponses =
         multicastHandler(req) respond {
           case Return(_) => log.debug("success networking")
